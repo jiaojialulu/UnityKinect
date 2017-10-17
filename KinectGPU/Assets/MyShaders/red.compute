@@ -1,0 +1,17 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+RWTexture2D<float4> Result;
+
+// 每个线程组的大小定义
+[numthreads(8,8,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+	// 给buffer赋值
+	float v = id.x/256.0f;
+
+	//Result[id.xy] = float4(v, 0, 0, 1.0);
+	Result[id.xy] = float4(1,0,0,1);
+}

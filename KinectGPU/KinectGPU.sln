@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KinectGPU.CSharp.Plugins", "KinectGPU.CSharp.Plugins.csproj", "{69A5C5D8-167F-84AB-4351-72CF9DBC1F67}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KinectGPU.CSharp", "KinectGPU.CSharp.csproj", "{DD6FFE9F-0380-C12E-A65E-8D50C9795664}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KinectGPU.CSharp.Editor.Plugins", "KinectGPU.CSharp.Editor.Plugins.csproj", "{8954FC37-3E49-2332-A58B-E5417CB7AF3D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{69A5C5D8-167F-84AB-4351-72CF9DBC1F67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69A5C5D8-167F-84AB-4351-72CF9DBC1F67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69A5C5D8-167F-84AB-4351-72CF9DBC1F67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69A5C5D8-167F-84AB-4351-72CF9DBC1F67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD6FFE9F-0380-C12E-A65E-8D50C9795664}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD6FFE9F-0380-C12E-A65E-8D50C9795664}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD6FFE9F-0380-C12E-A65E-8D50C9795664}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD6FFE9F-0380-C12E-A65E-8D50C9795664}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8954FC37-3E49-2332-A58B-E5417CB7AF3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8954FC37-3E49-2332-A58B-E5417CB7AF3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8954FC37-3E49-2332-A58B-E5417CB7AF3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8954FC37-3E49-2332-A58B-E5417CB7AF3D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

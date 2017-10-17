@@ -1,0 +1,55 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+struct tri
+{
+	float depth1;       // 4
+    float depth2;       // 4
+    float depth3;       // 4
+    uint index1;          // 4
+    uint index2;          // 4
+    uint index3;          // 4
+    float3 p1;          // 12
+    float3 p2;          // 12
+    float3 p3;          // 12
+};
+
+RWStructuredBuffer<tri> buffer;
+uint width;
+uint height;
+uint downSampleSize;
+//int numThread;
+
+float fx;
+float fy;
+float cx;
+float cy;
+
+[numthreads(4,1,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+	// 转index
+	uint index1 = buffer[id.x].index1 / (width / downSampleSize) * width*downSampleSize + buffer[id.x].index1 % (width / downSampleSize) * downSampleSize;
+	uint X = (index1 % width);
+    uint Y = index1 / width;
+
+	buffer[id.x].p1.z = buffer[id.x].depth1;
+	buffer[id.x].p1.x = -(X - cx + 0.5f) / fx*buffer[id.x].p1.z;
+	buffer[id.x].p1.y = -(Y - cy + 0.5f) / fy*buffer[id.x].p1.z;
+
+	index1 = buffer[id.x].index2 / (width / downSampleSize) * width*downSampleSize + buffer[id.x].index2 % (width / downSampleSize) * downSampleSize;
+	X = (index1 % width);
+    Y = index1 / width;
+
+	buffer[id.x].p2.z = buffer[id.x].depth2;
+	buffer[id.x].p2.x = -(X - cx + 0.5f) / fx*buffer[id.x].p2.z;
+	buffer[id.x].p2.y = -(Y - cy + 0.5f) / fy*buffer[id.x].p2.z;
+
+	index1 = buffer[id.x].index3 / (width / downSampleSize) * width*downSampleSize + buffer[id.x].index3 % (width / downSampleSize) * downSampleSize;
+	X = (index1 % width);
+    Y = index1 / width;
+
+	buffer[id.x].p3.z = buffer[id.x].depth3;
+	buffer[id.x].p3.x = -(X - cx + 0.5f) / fx*buffer[id.x].p3.z;
+	buffer[id.x].p3.y = -(Y - cy + 0.5f) / fy*buffer[id.x].p3.z;
+
+}
