@@ -49,7 +49,13 @@ public class newPoints : MonoBehaviour
         // must be greater than 0, less or equal to 2048 and a multiple of 4.
         _Buffer = new ComputeBuffer(_TrianglesTemplate.Length / 3, 60);
 
-
+        _Shader.SetInt("width", width);
+        _Shader.SetInt("height", height);
+        _Shader.SetInt("downSampleSize", _DownsampleSize);
+        _Shader.SetFloat("cx", _CameraIntrinsics.PrincipalPointX);
+        _Shader.SetFloat("cy", _CameraIntrinsics.PrincipalPointY);
+        _Shader.SetFloat("fx", _CameraIntrinsics.FocalLengthX);
+        _Shader.SetFloat("fy", _CameraIntrinsics.FocalLengthY);
     }
 
     int[] CreateMesh(int width, int height)
@@ -221,13 +227,7 @@ public class newPoints : MonoBehaviour
 
     void Dispatch(int width, int height)
     {
-        _Shader.SetInt("width", width);
-        _Shader.SetInt("height", height);
-        _Shader.SetInt("downSampleSize", _DownsampleSize);
-        _Shader.SetFloat("cx", _CameraIntrinsics.PrincipalPointX);
-        _Shader.SetFloat("cy", _CameraIntrinsics.PrincipalPointY);
-        _Shader.SetFloat("fx", _CameraIntrinsics.FocalLengthX);
-        _Shader.SetFloat("fy", _CameraIntrinsics.FocalLengthY);
+        
         int numThread = _TrianglesTemplate.Length / 3 / 4;
         //_Shader.SetInt("numThread",numThread);
 

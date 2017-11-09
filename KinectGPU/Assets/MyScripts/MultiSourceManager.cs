@@ -117,7 +117,7 @@ public class MultiSourceManager : MonoBehaviour
                 if (colorFrame != null)
                 {
                     var depthFrame = frame.DepthFrameReference.AcquireFrame();
-                    //var bodyIndexFrame = frame.BodyIndexFrameReference.AcquireFrame();
+                    var bodyIndexFrame = frame.BodyIndexFrameReference.AcquireFrame();
                     if (depthFrame != null)
                     {
                         colorFrame.CopyConvertedFrameDataToArray(_ColorData, ColorImageFormat.Rgba);
@@ -127,6 +127,7 @@ public class MultiSourceManager : MonoBehaviour
                         //TextureScale.Bilinear(_ColorTexture, 512, 424);
 
                         depthFrame.CopyFrameDataToArray(_DepthData);
+                        bodyIndexFrame.CopyFrameDataToArray(_BodyIndexData);
 
                         depthFrame.Dispose();
                         depthFrame = null;

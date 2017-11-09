@@ -88,6 +88,7 @@
     <Compile Include="Assets\MyScripts\MultiSourceManager.cs" />
     <Compile Include="Assets\MyScripts\bufferInComputeShader.cs" />
     <Compile Include="Assets\MyScripts\newMesh.cs" />
+    <Compile Include="Assets\MyScripts\newMesh2.cs" />
     <Compile Include="Assets\MyScripts\newPoints.cs" />
     <Compile Include="Assets\MyScripts\oldPoints.cs" />
     <Compile Include="Assets\MyScripts\red.cs" />
@@ -96,6 +97,7 @@
     <None Include="Assets\MyShaders\VertexColor.shader" />
     <None Include="Assets\MyShaders\buffer.compute" />
     <None Include="Assets\MyShaders\newMesh.compute" />
+    <None Include="Assets\MyShaders\newMesh2.compute" />
     <None Include="Assets\MyShaders\red.compute" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2013\UnityVS.CSharp.targets" />

@@ -6,7 +6,9 @@ public class oldPoints : MonoBehaviour
 {
 
     public GameObject MultiSourceManager;
-
+    public float iZMax = 2.0f;
+    public float iZMin = 0.5f;
+    public float distanceLimit = 0.5f;
     private KinectSensor _Sensor;
     private CoordinateMapper _Mapper;
     private Mesh _Mesh;
@@ -21,9 +23,11 @@ public class oldPoints : MonoBehaviour
 
     private MultiSourceManager _MultiManager;
     private CameraIntrinsics _CameraIntrinsics = new CameraIntrinsics();
-
+    private float[] colmap;
+    private float[] rowmap;
     void Start()
     {
+
         _Sensor = KinectSensor.GetDefault();
         if (_Sensor != null)
         {
@@ -40,6 +44,15 @@ public class oldPoints : MonoBehaviour
                 _Sensor.Open();
             }
         }
+
+        // 初始化参数
+        colmap = new float[512];
+        rowmap = new float[424];
+
+        for (int i = 0; i < 512; i++)
+            colmap[i] = (i - _CameraIntrinsics.PrincipalPointX + 0.5f) / _CameraIntrinsics.FocalLengthX;
+        for (int i = 0; i < 424; i++)
+            rowmap[i] = (i - _CameraIntrinsics.PrincipalPointY+ 0.5f) / _CameraIntrinsics.FocalLengthY;
     }
 
     void CreateMesh(int width, int height)
@@ -150,8 +163,8 @@ public class oldPoints : MonoBehaviour
                 }
                 //_Vertices[smallIndex].z = (float)avg;
                 _Vertices[smallIndex].z = (int)depthData[(y * frameDesc.Width) + x] / 1000.0f;
-                _Vertices[smallIndex].x = -(x - _CameraIntrinsics.PrincipalPointX + 0.5f) / _CameraIntrinsics.FocalLengthX * _Vertices[smallIndex].z;
-                _Vertices[smallIndex].y = -(y - _CameraIntrinsics.PrincipalPointY + 0.5f) / _CameraIntrinsics.FocalLengthY * _Vertices[smallIndex].z;
+                _Vertices[smallIndex].x = -colmap[x] * _Vertices[smallIndex].z;
+                _Vertices[smallIndex].y = -rowmap[y] * _Vertices[smallIndex].z;
 
 
 
@@ -167,11 +180,73 @@ public class oldPoints : MonoBehaviour
             indecies[i] = i;
         }
 
+        // Build triangle indices: 3 indices into vertex array for each triangle
+        // 三角化的序号数组，每个三角形需要三个序号来表示，而每个网格有两个三角形
+        int height = 424 / 4;
+        int width = 512 / 4;
+        
+
+        int[] _triangles = new int[(height - 1) * (width - 1) * 6];
+
+        bool backGroundTriangles = false;
+        int index = 0;
+        
+        for (int y = 0; y < height - 1; y++)
+        {
+            for (int x = 0; x < width - 1; x++)
+            {
+                // 不在深度范围（0-MaxDepthVal）的三角就要去除掉
+                if (true)
+                {
+                    backGroundTriangles = (
+                        (Mathf.Abs(_Vertices[y * width + x].z) > iZMax) ||
+                        (Mathf.Abs(_Vertices[y * width + x + 1].z) > iZMax) ||
+                        (Mathf.Abs(_Vertices[(y + 1) * width + x].z) > iZMax) ||
+                        (Mathf.Abs(_Vertices[(y + 1) * width + x + 1].z) > iZMax)
+                    );
+
+                    backGroundTriangles = backGroundTriangles || (
+                        (Mathf.Abs(_Vertices[y * width + x].z) <= iZMin) ||
+                        (Mathf.Abs(_Vertices[y * width + x + 1].z) <= iZMin) ||
+                        (Mathf.Abs(_Vertices[(y + 1) * width + x].z) <= iZMin) ||
+                        (Mathf.Abs(_Vertices[(y + 1) * width + x + 1].z) <= iZMin)
+                    );
+
+                    backGroundTriangles = backGroundTriangles || (
+                        (Mathf.Abs(_Vertices[y * width + x].z - _Vertices[y * width + x + 1].z) >= distanceLimit) ||
+                        (Mathf.Abs(_Vertices[y * width + x].z - _Vertices[(y + 1) * width + x].z) >= distanceLimit) ||
+                        (Mathf.Abs(_Vertices[(y + 1) * width + x].z - _Vertices[(y + 1) * width + x + 1].z) >= distanceLimit) ||
+                        (Mathf.Abs(_Vertices[(y) * width + x + 1].z - _Vertices[(y + 1) * width + x + 1].z) >= distanceLimit) 
+
+                    );
+                }
+                if (!backGroundTriangles)
+                {
+                    // For each grid cell output two triangles	
+                    // 左下的三角
+                    _triangles[index++] = (y * width) + x;
+                    _triangles[index++] = ((y + 1) * width) + x;
+                    _triangles[index++] = (y * width) + x + 1;
+                    // 右上的三角
+                    _triangles[index++] = ((y + 1) * width) + x;
+                    _triangles[index++] = ((y + 1) * width) + x + 1;
+                    _triangles[index++] = (y * width) + x + 1;
+                }
+
+
+            }
+        }
+        //Debug.LogError(index);
+        for (; index < (height - 1) * (width - 1) * 6; index++)
+        {
+            _triangles[index] = 0;
+        }
+
 
         _Mesh.vertices = _Vertices;
         _Mesh.uv = _UV;
-        //_Mesh.triangles = _Triangles;
-        _Mesh.SetIndices(indecies, MeshTopology.Points, 0);
+        _Mesh.triangles = _triangles;
+        //_Mesh.SetIndices(indecies, MeshTopology.Points, 0);
         //_Mesh.RecalculateNormals();
     }
 

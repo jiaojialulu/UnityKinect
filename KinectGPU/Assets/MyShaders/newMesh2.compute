@@ -1,0 +1,119 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+struct tri2
+{
+    float3 p1;          // 12
+    float3 p2;          // 12
+    float3 p3;          // 12
+};
+
+RWStructuredBuffer<tri2> buffer;
+uint width;
+uint height;
+float maxDepthLimit;
+float minDepthLimit;
+float distanceThreshold;
+
+float fx;
+float fy;
+float cx;
+float cy;
+
+[numthreads(8,1,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+	// 范围限制
+	if((buffer[id.x].p1.z>maxDepthLimit))
+	{
+		buffer[id.x].p1 = float3(0.0,0.0,0.0);
+		buffer[id.x].p2 = float3(0.0,0.0,0.0);
+		buffer[id.x].p3 = float3(0.0,0.0,0.0);
+		return;
+	}
+
+	if((buffer[id.x].p1.z<minDepthLimit))
+	{
+		buffer[id.x].p1 = float3(0.0,0.0,0.0);
+		buffer[id.x].p2 = float3(0.0,0.0,0.0);
+		buffer[id.x].p3 = float3(0.0,0.0,0.0);
+		return;
+	}
+
+	if((buffer[id.x].p2.z>maxDepthLimit))
+	{
+		buffer[id.x].p1 = float3(0.0,0.0,0.0);
+		buffer[id.x].p2 = float3(0.0,0.0,0.0);
+		buffer[id.x].p3 = float3(0.0,0.0,0.0);
+		return;
+	}
+
+	if((buffer[id.x].p2.z<minDepthLimit))
+	{
+		buffer[id.x].p1 = float3(0.0,0.0,0.0);
+		buffer[id.x].p2 = float3(0.0,0.0,0.0);
+		buffer[id.x].p3 = float3(0.0,0.0,0.0);
+		return;
+	}
+
+	if((buffer[id.x].p3.z>maxDepthLimit))
+	{
+		buffer[id.x].p1 = float3(0.0,0.0,0.0);
+		buffer[id.x].p2 = float3(0.0,0.0,0.0);
+		buffer[id.x].p3 = float3(0.0,0.0,0.0);
+		return;
+	}
+
+	if((buffer[id.x].p3.z<minDepthLimit))
+	{
+		buffer[id.x].p1 = float3(0.0,0.0,0.0);
+		buffer[id.x].p2 = float3(0.0,0.0,0.0);
+		buffer[id.x].p3 = float3(0.0,0.0,0.0);
+		return;
+	}
+	
+	// 距离限制
+	if(abs(buffer[id.x].p1.z-buffer[id.x].p2.z)>distanceThreshold)
+	{
+		buffer[id.x].p1 = float3(0.0,0.0,0.0);
+		buffer[id.x].p2 = float3(0.0,0.0,0.0);
+		buffer[id.x].p3 = float3(0.0,0.0,0.0);
+		return;
+	}
+	if(abs(buffer[id.x].p1.z-buffer[id.x].p3.z)>distanceThreshold)
+	{
+		buffer[id.x].p1 = float3(0.0,0.0,0.0);
+		buffer[id.x].p2 = float3(0.0,0.0,0.0);
+		buffer[id.x].p3 = float3(0.0,0.0,0.0);
+		return;
+	}
+	if(abs(buffer[id.x].p3.z-buffer[id.x].p2.z)>distanceThreshold)
+	{
+		buffer[id.x].p1 = float3(0.0,0.0,0.0);
+		buffer[id.x].p2 = float3(0.0,0.0,0.0);
+		buffer[id.x].p3 = float3(0.0,0.0,0.0);
+		return;
+	}
+
+	// 转index，SV_GroupThreadID.x就是降采样后的三角形标号的一维坐标
+	uint index1 = buffer[id.x].p1.x;
+	uint X = (index1 % width);
+    uint Y = index1 / width;
+
+	buffer[id.x].p1.x = -(X - cx + 0.5f) / fx*buffer[id.x].p1.z;
+	buffer[id.x].p1.y = -(Y - cy + 0.5f) / fy*buffer[id.x].p1.z;
+
+	index1 = buffer[id.x].p2.x;
+	X = (index1 % width);
+    Y = index1 / width;
+
+	buffer[id.x].p2.x = -(X - cx + 0.5f) / fx*buffer[id.x].p2.z;
+	buffer[id.x].p2.y = -(Y - cy + 0.5f) / fy*buffer[id.x].p2.z;
+
+	index1 = buffer[id.x].p3.x;
+	X = (index1 % width);
+    Y = index1 / width;
+
+	buffer[id.x].p3.x = -(X - cx + 0.5f) / fx*buffer[id.x].p3.z;
+	buffer[id.x].p3.y = -(Y - cy + 0.5f) / fy*buffer[id.x].p3.z;
+
+}
